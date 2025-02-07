@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Link Shortener</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 50px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 { text-align: center; }
+    form { margin-top: 20px; }
+    input[type="url"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    input[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      background: #4285F4;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      background: #e2ffe2;
+      border: 1px solid #b2ffb2;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Link Shortener</h1>
+    <form id="shortenForm" method="post" action="shorten.php">
+      <input type="url" name="original_url" placeholder="Enter your URL here" required>
+      <input type="submit" value="Shorten URL">
+    </form>
+    <div id="result" class="result" style="display:none;"></div>
+  </div>
+
+  <script>
+    document.getElementById('shortenForm').addEventListener('submit', function(e) {
+      e.preventDefault(); // Prevent normal form submission
+
+      var form = e.target;
+      var formData = new FormData(form);
+
+      fetch(form.action, {
+        method: 'POST',
+        body: formData
+      })
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(data) {
+        var resultDiv = document.getElementById('result');
+        if (data.success) {
+          resultDiv.style.display = 'block';
+          resultDiv.innerHTML = 'Short URL: <a href="' + data.short_url + '" target="_blank">' + data.short_url + '</a>';
+        } else {
+          resultDiv.style.display = 'block';
+          resultDiv.innerHTML = 'Error: ' + data.message;
+        }
+      })
+      .catch(function(error) {
+        console.error('Error:', error);
+      });
+    });
+  </script>
+</body>
+</html>
