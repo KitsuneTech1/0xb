@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# If the request is not for an existing file or directory...
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# ...and if the URL consists of 6 or more alphanumeric characters,
+# rewrite it to redirect.php passing the short code as a parameter.
+RewriteRule ^([0-9a-zA-Z]{6,})$ redirect.php?code=$1 [L,QSA]
