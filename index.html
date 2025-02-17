@@ -17,28 +17,38 @@
         padding: 10px 20px;
         cursor: pointer;
       }
+      #shortenedUrl {
+        margin-top: 20px;
+        font-size: 18px;
+        word-wrap: break-word;
+      }
     </style>
   </head>
   <body>
     <h1>Simple URL Shortener</h1>
-    <input type="text" id="shortCode" placeholder="Enter short code (e.g., 'gg')" />
-    <button onclick="redirect()">Go</button>
+    <input type="text" id="longUrl" placeholder="Enter URL to shorten" />
+    <button onclick="shortenUrl()">Shorten URL</button>
+    <div id="shortenedUrl"></div>
 
     <script>
-      // JavaScript: URL mappings and redirect logic
-      const urls = {
-        "gg": "https://google.com",
-        "gh": "https://github.com",
-        "yt": "https://youtube.com"
-      };
+      const urlMap = {};
+      
+      function generateShortCode() {
+        return Math.random().toString(36).substr(2, 5);
+      }
 
-      function redirect() {
-        const code = document.getElementById('shortCode').value.trim();
-        if (urls[code]) {
-          window.location.href = urls[code];
-        } else {
-          alert('URL not found! Please check your short code.');
+      function shortenUrl() {
+        const longUrl = document.getElementById('longUrl').value.trim();
+        if (!longUrl) {
+          alert('Please enter a valid URL');
+          return;
         }
+        
+        const shortCode = generateShortCode();
+        urlMap[shortCode] = longUrl;
+        
+        const shortUrl = window.location.href + shortCode;
+        document.getElementById('shortenedUrl').innerHTML = `Shortened URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
       }
     </script>
   </body>
