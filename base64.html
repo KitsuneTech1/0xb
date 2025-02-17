@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Base64 Encoder/Decoder</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f7f7f7;
+      }
+      header {
+        background: #2c3e50;
+        color: #ecf0f1;
+        padding: 2rem;
+        text-align: center;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 2.5rem;
+      }
+      .subtitle {
+        margin-top: 0.5rem;
+        font-size: 1.2rem;
+        color: #ecf0f1;
+      }
+      a.back-link {
+        display: inline-block;
+        background: #2c3e50;
+        color: #ecf0f1;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        text-decoration: none;
+        transition: background 0.2s ease;
+        margin-top: 1rem;
+      }
+      a.back-link:hover {
+        background: #34495e;
+      }
+      .container {
+        max-width: 600px;
+        margin: 2rem auto;
+        background: #ffffff;
+        border-radius: 0.5rem;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+      }
+      h2 {
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+      textarea {
+        width: 100%;
+        height: 120px;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+        padding: 0.5rem;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 0.25rem;
+      }
+      .buttons {
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      button {
+        background: #2c3e50;
+        color: #ecf0f1;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        margin: 0 0.5rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background 0.2s ease;
+      }
+      button:hover {
+        background: #34495e;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>0xB's Tools</h1>
+      <p class="subtitle">Base64 Encoder/Decoder</p>
+      <a class="back-link" href="index.html">Back to Main Website</a>
+    </header>
+
+    <div class="container">
+      <h2>Encode or Decode Text</h2>
+      <label for="inputText">Input Text:</label>
+      <textarea id="inputText" placeholder="Type or paste your text here..."></textarea>
+
+      <div class="buttons">
+        <button onclick="encodeBase64()">Encode</button>
+        <button onclick="decodeBase64()">Decode</button>
+      </div>
+
+      <label for="outputText">Output Text:</label>
+      <textarea id="outputText" placeholder="Result will appear here..." readonly></textarea>
+    </div>
+
+    <script>
+      function encodeBase64() {
+        const input = document.getElementById('inputText').value;
+        try {
+          const encoded = btoa(input);
+          document.getElementById('outputText').value = encoded;
+        } catch (error) {
+          alert('Error encoding text. Make sure your input is valid.');
+        }
+      }
+
+      function decodeBase64() {
+        const input = document.getElementById('inputText').value;
+        try {
+          const decoded = atob(input);
+          document.getElementById('outputText').value = decoded;
+        } catch (error) {
+          alert('Error decoding text. Make sure your input is valid Base64.');
+        }
+      }
+    </script>
+  </body>
+</html>
