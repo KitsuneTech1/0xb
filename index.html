@@ -1,59 +1,156 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>URL Shortener</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        padding: 20px;
-        text-align: center;
-      }
-      input {
-        padding: 10px;
-        width: 300px;
-        margin: 10px;
-      }
-      button {
-        padding: 10px 20px;
-        cursor: pointer;
-      }
-      #shortenedUrl, #lastUpdated {
-        margin-top: 20px;
-        font-size: 16px;
-        word-wrap: break-word;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Simple URL Shortener</h1>
-    <input type="text" id="longUrl" placeholder="Enter URL to shorten" />
-    <button onclick="shortenUrl()">Shorten URL</button>
-    <div id="shortenedUrl"></div>
-    <div id="lastUpdated"></div>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>0xB's Tools</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+    }
+    header {
+      background: #2c3e50;
+      color: #ecf0f1;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+    p.last-updated {
+      color: #f39c12;
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin: 0.5rem 0;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .tool-card {
+      background: #ffffff;
+      border-radius: 0.5rem;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+    .tool-card:hover {
+      transform: translateY(-3px);
+    }
+    .tool-card h2 {
+      font-size: 1.25rem;
+      margin: 0.5rem 0;
+    }
+    .tool-card p {
+      font-size: 0.95rem;
+      color: #666;
+      margin-bottom: 1rem;
+    }
+    .tool-card a {
+      display: inline-block;
+      background: #2c3e50;
+      color: #ecf0f1;
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+      text-decoration: none;
+      transition: background 0.2s ease;
+    }
+    .tool-card a:hover {
+      background: #34495e;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>0xB's Tools</h1>
+    <p>A collection of handy front-end tools, no backend required!</p>
+    <p class="last-updated">Last Updated: February 17, 2025</p>
+  </header>
 
-    <script>
-      const urlMap = {};
-      
-      function generateShortCode() {
-        return Math.random().toString(36).substr(2, 5);
-      }
+  <div class="container">
+    <div class="tools-grid">
+      <!-- Tool 1 -->
+      <div class="tool-card">
+        <h2>Lowercase <-> Uppercase</h2>
+        <p>Convert text between lower and upper case instantly.</p>
+        <a href="#">Try Now</a>
+      </div>
 
-      function shortenUrl() {
-        const longUrl = document.getElementById('longUrl').value.trim();
-        if (!longUrl) {
-          alert('Please enter a valid URL');
-          return;
-        }
-        
-        const shortCode = generateShortCode();
-        urlMap[shortCode] = longUrl;
-        
-        const shortUrl = window.location.href + shortCode;
-        document.getElementById('shortenedUrl').innerHTML = `Shortened URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
-        
-        const currentDate = new Date().toLocaleString();
-        document.getElementById('lastUpdated').innerHTML = `Last Updated: ${currentDate}`;
-      }
-    </script>
-  </body>
+      <!-- Tool 2 -->
+      <div class="tool-card">
+        <h2>Base64 Encoder/Decoder</h2>
+        <p>Encode and decode text to Base64 with ease.</p>
+        <a href="#">Try Now</a>
+      </div>
+
+      <!-- Tool 3 -->
+      <div class="tool-card">
+        <h2>TDEE Calculator</h2>
+        <p>Estimate your total daily energy expenditure.</p>
+        <a href="#">Try Now</a>
+      </div>
+
+      <!-- Tool 4 -->
+      <div class="tool-card">
+        <h2>Password Strength Checker</h2>
+        <p>Check how secure your password is.</p>
+        <a href="#">Try Now</a>
+      </div>
+
+      <!-- Tool 5 -->
+      <div class="tool-card">
+        <h2>Tip Calculator</h2>
+        <p>Calculate tips and split the bill with friends.</p>
+        <a href="#">Try Now</a>
+      </div>
+
+      <!-- Tool 6 (dummy) -->
+      <div class="tool-card">
+        <h2>Image Compressor</h2>
+        <p>Reduce image file size on the fly (example placeholder).</p>
+        <a href="#">Try Now</a>
+      </div>
+
+      <!-- Tool 7 (dummy) -->
+      <div class="tool-card">
+        <h2>Random Quote Generator</h2>
+        <p>Get inspired by random quotes (example placeholder).</p>
+        <a href="#">Try Now</a>
+      </div>
+
+      <!-- Tool 8 (dummy) -->
+      <div class="tool-card">
+        <h2>Expense Tracker</h2>
+        <p>Track daily expenses offline (example placeholder).</p>
+        <a href="#">Try Now</a>
+      </div>
+
+      <!-- Tool 9 (dummy) -->
+      <div class="tool-card">
+        <h2>Random Color Palette</h2>
+        <p>Generate unique color palettes (example placeholder).</p>
+        <a href="#">Try Now</a>
+      </div>
+
+      <!-- Tool 10 (dummy) -->
+      <div class="tool-card">
+        <h2>Word Counter</h2>
+        <p>Count the words in your text (example placeholder).</p>
+        <a href="#">Try Now</a>
+      </div>
+    </div>
+  </div>
+</body>
 </html>
