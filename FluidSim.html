@@ -6,11 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     html, body {
-      margin: 0; 
-      padding: 0; 
-      height: 100%; 
+      margin: 0;
+      padding: 0;
+      height: 100%;
       background: #000;
-      overflow: hidden; 
+      overflow: hidden;
       font-family: Arial, sans-serif;
     }
     header {
@@ -40,7 +40,6 @@
       height: 100%;
       display: block;
     }
-    /* Optional overlay instructions (you can remove or style differently) */
     #instructions {
       position: absolute;
       top: 80px;
@@ -86,7 +85,7 @@
   window.addEventListener('resize', resizeCanvas);
   resizeCanvas();
 
-  // Simple utility to compile a shader
+  // Helper: Compile Shader
   function compileShader(type, source) {
     const shader = gl.createShader(type);
     gl.shaderSource(shader, source);
@@ -98,7 +97,7 @@
     return shader;
   }
 
-  // Vertex shader (positions the full-screen quad)
+  // Vertex Shader
   const vertexShaderSrc = `
     attribute vec2 aPosition;
     void main() {
@@ -106,10 +105,7 @@
     }
   `;
 
-  // Fragment shader: Renders a very simplified fluid-like effect
-  // We'll maintain a small velocity field + color field in buffers.
-  // For demonstration, we combine velocity + color ping-pong approach in one pass,
-  // so it's not physically perfect, but visually fluid-ish.
+  // Fragment Shader
   const fragmentShaderSrc = `
     precision highp float;
     uniform vec2 uResolution;
@@ -132,23 +128,116 @@
       // Basic swirling color based on time + coords
       float angle = atan(uv.y - 0.5, uv.x - 0.5) + uTime * 0.5;
       float radius = distance(uv, vec2(0.5));
-      float swirl = sin(angle*6.0 + radius*20.0);
+      float swirl = sin(angle * 6.0 + radius * 20.0);
 
       // Add color that intensifies near mouse
-      float mouseInfluence = smoothstep(uRadius, 0.0, dist); // fade out from mouse
-      vec3 color = vec3(0.2 + 0.8*swirl*mouseInfluence, 0.3 + 0.7*mouseInfluence, 0.5 + 0.5*swirl*mouseInfluence);
+      float mouseInfluence = smoothstep(uRadius, 0.0, dist);
+      vec3 color = vec3(
+        0.2 + 0.8 * swirl * mouseInfluence,
+        0.3 + 0.7 * mouseInfluence,
+        0.5 + 0.5 * swirl * mouseInfluence
+      );
 
       gl_FragColor = vec4(color, 1.0);
     }
   `;
 
+  // Create & Link Program
   const vertexShader = compileShader(gl.VERTEX_SHADER, vertexShaderSrc);
   const fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragmentShaderSrc);
-
   const program = gl.createProgram();
   gl.attachShader(program, vertexShader);
   gl.attachShader(program, fragmentShader);
   gl.linkProgram(program);
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
     console.error(gl.getProgramInfoLog(program));
-    throw new Error('Program link error
+    throw new Error('Program link error');
+  }
+  gl.useProgram(program);
+
+  // Create full-screen quad
+  const quadBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, quadBuffer);
+  const vertices = new Float32Array([
+    -1, -1,
+     1, -1,
+    -1,  1,
+     1,  1,
+  ]);
+  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+  const aPosition = gl.getAttribLocation(program, 'aPosition');
+  gl.enableVertexAttribArray(aPosition);
+  gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
+
+  // Uniforms
+  const uResolution = gl.getUniformLocation(program, 'uResolution');
+  const uTime = gl.getUniformLocation(program, 'uTime');
+  const uMouse = gl.getUniformLocation(program, 'uMouse');
+  const uRadius = gl.getUniformLocation(program, 'uRadius');
+
+  let timeStart = performance.now();
+  let mousePos = [0, 0];
+  let mouseRadius = 0.0;
+  let isMouseDown = false;
+
+  // Update mouse position
+  function updateMouse(e) {
+    mousePos = [e.clientX, canvasHeight - e.clientY];
+  }
+
+  // Mouse events
+  canvas.addEventListener('mousedown', e => {
+    isMouseDown = true;
+    updateMouse(e);
+  });
+  canvas.addEventListener('mousemove', e => {
+    if (isMouseDown) updateMouse(e);
+  });
+  canvas.addEventListener('mouseup', () => {
+    isMouseDown = false;
+  });
+  canvas.addEventListener('mouseleave', () => {
+    isMouseDown = false;
+  });
+
+  // Touch events
+  canvas.addEventListener('touchstart', e => {
+    isMouseDown = true;
+    let t = e.touches[0];
+    updateMouse({ clientX: t.clientX, clientY: t.clientY });
+  });
+  canvas.addEventListener('touchmove', e => {
+    if (isMouseDown) {
+      let t = e.touches[0];
+      updateMouse({ clientX: t.clientX, clientY: t.clientY });
+    }
+  });
+  canvas.addEventListener('touchend', () => {
+    isMouseDown = false;
+  });
+
+  // Render Loop
+  function render() {
+    requestAnimationFrame(render);
+
+    const now = performance.now();
+    const elapsed = (now - timeStart) * 0.001;
+
+    gl.useProgram(program);
+    gl.uniform2f(uResolution, canvasWidth, canvasHeight);
+    gl.uniform1f(uTime, elapsed);
+
+    // Expand / shrink mouse 'ink' radius
+    mouseRadius += isMouseDown ? 2.0 : -2.0;
+    mouseRadius = Math.max(0.0, Math.min(mouseRadius, 100.0));
+
+    gl.uniform1f(uRadius, mouseRadius);
+    gl.uniform2f(uMouse, mousePos[0], mousePos[1]);
+
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+  render();
+  </script>
+</body>
+</html>
