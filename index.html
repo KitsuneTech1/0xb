@@ -17,9 +17,9 @@
         padding: 10px 20px;
         cursor: pointer;
       }
-      #shortenedUrl {
+      #shortenedUrl, #lastUpdated {
         margin-top: 20px;
-        font-size: 18px;
+        font-size: 16px;
         word-wrap: break-word;
       }
     </style>
@@ -29,6 +29,7 @@
     <input type="text" id="longUrl" placeholder="Enter URL to shorten" />
     <button onclick="shortenUrl()">Shorten URL</button>
     <div id="shortenedUrl"></div>
+    <div id="lastUpdated"></div>
 
     <script>
       const urlMap = {};
@@ -49,6 +50,9 @@
         
         const shortUrl = window.location.href + shortCode;
         document.getElementById('shortenedUrl').innerHTML = `Shortened URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
+        
+        const currentDate = new Date().toLocaleString();
+        document.getElementById('lastUpdated').innerHTML = `Last Updated: ${currentDate}`;
       }
     </script>
   </body>
