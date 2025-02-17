@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Real-Time Fluid Simulation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    html, body {
+      margin: 0; 
+      padding: 0; 
+      height: 100%; 
+      background: #000;
+      overflow: hidden; 
+      font-family: Arial, sans-serif;
+    }
+    header {
+      background: #2c3e50;
+      color: #ecf0f1;
+      padding: 1rem;
+      text-align: center;
+      position: absolute;
+      width: 100%;
+      z-index: 9999;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.75rem;
+    }
+    header a {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: #34495e;
+      color: #ecf0f1;
+      text-decoration: none;
+      border-radius: 0.25rem;
+    }
+    #canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    /* Optional overlay instructions (you can remove or style differently) */
+    #instructions {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ecf0f1;
+      font-size: 1rem;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>0xB's Tools: Fluid Simulation</h1>
+    <a href="index.html">Back to Main Website</a>
+  </header>
+  <div id="instructions">Click and drag to swirl the fluid</div>
+  <canvas id="canvas"></canvas>
+
+  <script>
+  // ====================================================
+  // Minimal WebGL Fluid Simulation (Simplified)
+  // ====================================================
+
+  const canvas = document.getElementById('canvas');
+  const gl = canvas.getContext('webgl', { alpha: false });
+
+  if (!gl) {
+    alert('WebGL not supported in this browser!');
+  }
+
+  let canvasWidth, canvasHeight;
+  function resizeCanvas() {
+    canvasWidth = canvas.clientWidth;
+    canvasHeight = canvas.clientHeight;
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+    gl.viewport(0, 0, canvasWidth, canvasHeight);
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  // Simple utility to compile a shader
+  function compileShader(type, source) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      console.error(gl.getShaderInfoLog(shader));
+      throw new Error('Shader compile error');
+    }
+    return shader;
+  }
+
+  // Vertex shader (positions the full-screen quad)
+  const vertexShaderSrc = `
+    attribute vec2 aPosition;
+    void main() {
+      gl_Position = vec4(aPosition, 0.0, 1.0);
+    }
+  `;
+
+  // Fragment shader: Renders a very simplified fluid-like effect
+  // We'll maintain a small velocity field + color field in buffers.
+  // For demonstration, we combine velocity + color ping-pong approach in one pass,
+  // so it's not physically perfect, but visually fluid-ish.
+  const fragmentShaderSrc = `
+    precision highp float;
+    uniform vec2 uResolution;
+    uniform float uTime;
+    uniform vec2 uMouse;
+    uniform float uRadius;
+
+    // Pseudo-random generator
+    float rand(vec2 co){
+      return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+    }
+
+    void main() {
+      // Convert fragment coords to [0,1]
+      vec2 uv = gl_FragCoord.xy / uResolution.xy;
+
+      // Distance from mouse
+      float dist = distance(uv * uResolution, uMouse);
+
+      // Basic swirling color based on time + coords
+      float angle = atan(uv.y - 0.5, uv.x - 0.5) + uTime * 0.5;
+      float radius = distance(uv, vec2(0.5));
+      float swirl = sin(angle*6.0 + radius*20.0);
+
+      // Add color that intensifies near mouse
+      float mouseInfluence = smoothstep(uRadius, 0.0, dist); // fade out from mouse
+      vec3 color = vec3(0.2 + 0.8*swirl*mouseInfluence, 0.3 + 0.7*mouseInfluence, 0.5 + 0.5*swirl*mouseInfluence);
+
+      gl_FragColor = vec4(color, 1.0);
+    }
+  `;
+
+  const vertexShader = compileShader(gl.VERTEX_SHADER, vertexShaderSrc);
+  const fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragmentShaderSrc);
+
+  const program = gl.createProgram();
+  gl.attachShader(program, vertexShader);
+  gl.attachShader(program, fragmentShader);
+  gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    console.error(gl.getProgramInfoLog(program));
+    throw new Error('Program link error
